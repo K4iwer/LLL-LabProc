@@ -1,0 +1,127 @@
+A chave aqui é descobrir para qual placa ele foi compilado, porque LED_BUILTIN e o comportamento do LED mudam conforme o hardware.
+Sim. Analisei o .elf: ele foi compilado para ESP32-C3 / RISC-V:
+1. pinMode(LED_BUILTIN, OUTPUT)
+No seu setup():
+void setup() {
+ pinMode(LED_BUILTIN, OUTPUT);
+}
+No .elf, isso virou praticamente:
+42000020:
+   li a1, 0x3
+   li a0, 0x18
+   j  0x4200004a <pinMode>
+Tradução:
+pinMode(0x18, 0x3);
+Ou seja:
+pinMode(24, OUTPUT);
+Aqui:
+a0 = primeiro argumento = LED_BUILTIN = 24
+a1 = segundo argumento = OUTPUT = 3
+Então a equivalência direta é:
+li a1, 0x3       ; OUTPUT
+li a0, 0x18      ; LED_BUILTIN = 24
+j pinMode        ; chama pinMode
+Dentro da função pinMode, o código ainda faz um tratamento especial:
+li a5, 0x18
+beq a0, a5, ...
+li s0, 0x2
+Ou seja: quando o pino é 24, ele mapeia internamente para o GPIO físico 2, que é típico de LED RGB embutido nessa placa.
+
+2. digitalWrite(LED_BUILTIN, HIGH)
+No seu loop():
+digitalWrite(LED_BUILTIN, HIGH);
+delay(1000);
+digitalWrite(LED_BUILTIN, LOW);
+delay(1000);
+No .elf, virou:
+42000026 <loop>:
+   addi sp, sp, -0x10
+
+   li   a1, 0x1
+   li   a0, 0x18
+   sw   ra, 0xc(sp)
+   jal  0x42000108 <digitalWrite>
+
+   li   a0, 0x3e8
+   jal  0x42000244 <delay>
+
+   li   a0, 0x18
+   li   a1, 0x0
+   jal  0x42000108 <digitalWrite>
+
+   lw   ra, 0xc(sp)
+   li   a0, 0x3e8
+   addi sp, sp, 0x10
+   j    0x42000244 <delay>
+A parte equivalente a:
+digitalWrite(LED_BUILTIN, HIGH);
+é:
+li  a1, 0x1       ; HIGH
+li  a0, 0x18      ; LED_BUILTIN = 24
+jal digitalWrite
+A parte equivalente a:
+digitalWrite(LED_BUILTIN, LOW);
+é:
+li  a0, 0x18      ; LED_BUILTIN = 24
+li  a1, 0x0       ; LOW
+jal digitalWrite
+
+3. O que digitalWrite faz nesse caso?
+A função digitalWrite também tem tratamento especial para o pino 24:
+42000108 <digitalWrite>:
+   li   a5, 0x18
+   mv   s0, a1
+   bne  a0, a5, 0x42000136
+Ou seja:
+if (pin == 24) {
+   // tratamento especial para LED RGB
+}
+Quando o pino é 24, ele não chama diretamente gpio_set_level. Ele chama:
+j 0x4200095e <rgbLedWrite>
+Antes disso, para HIGH, ele faz:
+snez a3, a1      ; se a1 != 0, a3 = 1
+slli a3, a3, 0x6 ; a3 = a3 << 6 = 64
+mv   a2, a3
+mv   a1, a3
+j    rgbLedWrite
+Então:
+digitalWrite(LED_BUILTIN, HIGH);
+vira conceitualmente:
+rgbLedWrite(64, 64, 64);
+E:
+digitalWrite(LED_BUILTIN, LOW);
+vira:
+rgbLedWrite(0, 0, 0);
+
+4. Então digitalWrite(LED_BUILTIN, HIGH) apaga ou acende?
+Acende.
+Mais precisamente: nessa placa, LED_BUILTIN é tratado como LED RGB. Quando você faz:
+digitalWrite(LED_BUILTIN, HIGH);
+o Assembly mostra que o código chama algo equivalente a:
+rgbLedWrite(64, 64, 64);
+Ou seja, ele liga o LED RGB com intensidade moderada em vermelho, verde e azul — visualmente deve ficar branco ou esbranquiçado.
+Quando faz:
+digitalWrite(LED_BUILTIN, LOW);
+ele chama:
+rgbLedWrite(0, 0, 0);
+Aí o LED apaga.
+Resumo seco:
+pinMode(LED_BUILTIN, OUTPUT)
+→ li a1, 0x3
+→ li a0, 0x18
+→ j pinMode
+
+digitalWrite(LED_BUILTIN, HIGH)
+→ li a1, 0x1
+→ li a0, 0x18
+→ jal digitalWrite
+→ rgbLedWrite(64, 64, 64)
+→ LED acende
+
+digitalWrite(LED_BUILTIN, LOW)
+→ li a1, 0x0
+→ li a0, 0x18
+→ jal digitalWrite
+→ rgbLedWrite(0, 0, 0)
+→ LED apaga
+Pegadinha importante: em algumas placas Arduino o LED embutido pode ser ativo em nível baixo, mas não é o caso mostrado por este .elf. Aqui o binário deixa claro: HIGH gera valores RGB não nulos, então acende.
