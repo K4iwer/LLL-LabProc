@@ -125,3 +125,19 @@ digitalWrite(LED_BUILTIN, LOW)
 → rgbLedWrite(0, 0, 0)
 → LED apaga
 Pegadinha importante: em algumas placas Arduino o LED embutido pode ser ativo em nível baixo, mas não é o caso mostrado por este .elf. Aqui o binário deixa claro: HIGH gera valores RGB não nulos, então acende.
+
+
+/-----/
+Agora: o que acontece DENTRO do pinMode
+
+A função inteira compilada é essa:
+
+4200004a <pinMode>:
+4200004a: 7179          addi sp, sp, -0x30
+4200004c: d422          sw s0, 0x28(sp)
+4200004e: d226          sw s1, 0x24(sp)
+42000050: d606          sw ra, 0x2c(sp)
+42000052: 47e1          li a5, 0x18
+42000054: 84ae          mv s1, a1
+42000056: 4409          li s0, 0x2
+42000058: 00f50663      beq a0, a5, 0x42000064
