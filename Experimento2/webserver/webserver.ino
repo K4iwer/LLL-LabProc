@@ -2,8 +2,8 @@
 #include <WebServer.h>
 
 // Nome e senha do Wi-Fi
-const char* ssid = "ESP32_do_grupinho_8";
-const char* password = "LLLrebolando";
+const char* ssid = "ESP32_do_grupinho_s";
+const char* password = "LLL";
 
 // Cria servidor HTTP na porta 80
 WebServer server(80);
