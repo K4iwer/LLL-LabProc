@@ -12,14 +12,22 @@ void escreverLeds(int valor) {
     digitalWrite(LED_BIT3, (v & 0x08) ? HIGH : LOW);
 }
 
-int fromBinary4Signed(String bin) {
+int fromBinary4OnesComplement(String bin) {
     int v = strtol(bin.c_str(), NULL, 2);
 
-    if (v >= 8) {
-        v -= 16;
+    // é -0
+    if (bin == "1111") {
+        return 0;
     }
 
-    return v;
+    // é positivo
+    if (bin[0] == '0') {
+        return v;
+    }
+    // é negativo
+    v = (~v) & 0b1111; //inverte todos bits e pega os ultimos 4
+
+    return -v;
 }
 
 String toBinary4(int valor) {
@@ -42,11 +50,11 @@ void handleCalculo(String entrada) {
     // 1010+0011
 
     String binA = entrada.substring(0, 4);
-    char op = entrada.charAt(5);
-    String binB = entrada.substring(7, 11);
+    char op = entrada.charAt(4);
+    String binB = entrada.substring(5, 9);
 
-    int a = fromBinary4Signed(binA);
-    int b = fromBinary4Signed(binB);
+    int a = fromBinary4OnesComplement(binA);
+    int b = fromBinary4OnesComplement(binB);
 
     int resultado;
 
@@ -65,6 +73,9 @@ void handleCalculo(String entrada) {
 
     Serial.print("B: ");
     Serial.println(b);
+
+    Serial.print("Op: ");
+    Serial.println(op);
 
     Serial.print("Resultado decimal: ");
     Serial.println(resultado);
@@ -99,6 +110,6 @@ void loop() {
 
         String entrada = Serial.readStringUntil('\n');
 
-        calcular(entrada);
+        handleCalculo(entrada);
     }
 }
