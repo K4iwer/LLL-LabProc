@@ -83,7 +83,7 @@ void handleCalculo(String entrada) {
     Serial.print("Resultado binario: ");
     Serial.println(toBinary4(resultado));
 
-    if(resultado > 7 || resultado < -8) {
+    if(resultado > 7 || resultado < -7) {
         Serial.println("OVERFLOW!");
     }
 
