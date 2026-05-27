@@ -1,15 +1,14 @@
-const int LED_BIT0 = 13;
-const int LED_BIT1 = 12;
-const int LED_BIT2 = 14;
-const int LED_BIT3 = 27;
+const int LED_BIT0 = 9;
+const int LED_BIT1 = 8;
+const int LED_BIT2 = 7;
+const int LED_BIT3 = 6;
 
-void escreverLeds(int valor) {
-    uint8_t v = valor & 0x0F;
+void escreverLeds(String valor) {
 
-    digitalWrite(LED_BIT0, (v & 0x01) ? HIGH : LOW);
-    digitalWrite(LED_BIT1, (v & 0x02) ? HIGH : LOW);
-    digitalWrite(LED_BIT2, (v & 0x04) ? HIGH : LOW);
-    digitalWrite(LED_BIT3, (v & 0x08) ? HIGH : LOW);
+    digitalWrite(LED_BIT0, (valor[3] == '1') ? HIGH : LOW);
+    digitalWrite(LED_BIT1, (valor[2] == '1')  ? HIGH : LOW);
+    digitalWrite(LED_BIT2, (valor[1] == '1')  ? HIGH : LOW);
+    digitalWrite(LED_BIT3, (valor[0] == '1')  ? HIGH : LOW);
 }
 
 int fromBinary4OnesComplement(String bin) {
@@ -31,15 +30,62 @@ int fromBinary4OnesComplement(String bin) {
 }
 
 String toBinary4(int valor) {
-    uint8_t v = valor & 0b1111;
+  // v tá em complemento de 2, pq e assim que a ESP guarda int
+    int v = valor & 0b1111;
+
+    int v_final;
+    if (valor >= 0) {
+      // pra positivos, complemento de 2 é igual a 1
+      v_final = v;
+    }
+    else{
+      v_final = (~(-v)) & 0b1111;
+    }
 
     String s = "";
 
     for (int i = 3; i >= 0; i--) {
-        s += (v & (1 << i)) ? "1" : "0";
+        s += (v_final & (1 << i)) ? "1" : "0";
     }
 
     return s;
+}
+
+String sum(String a, String b) {
+  // Converte os caracteres ASCII ('0' ou '1') para os inteiros binários 0 ou 1
+  int a3 = a[0] - '0', b3 = b[0] - '0';
+  int a2 = a[1] - '0', b2 = b[1] - '0';
+  int a1 = a[2] - '0', b1 = b[2] - '0';
+  int a0 = a[3] - '0', b0 = b[3] - '0';
+
+  int c0 = 0, c1 = 0, c2 = 0, c3 = 0;
+  int r0, r1, r2, r3;
+
+  r0 = (a0 ^ b0) & 1; 
+  c0 = a0 & b0;
+
+  r1 = (a1 ^ b1 ^ c0) & 1;
+  c1 = (a1 + b1 + c0 >= 2) ? 1 : 0;
+
+  r2 = (a2 ^ b2 ^ c1) & 1;
+  c2 = (a2 + b2 + c1 >= 2) ? 1 : 0;
+
+  r3 = (a3 ^ b3 ^ c2) & 1;
+  c3 = (a3 + b3 + c2 >= 2) ? 1 : 0;
+
+  String resultado = String(r3) + String(r2) + String(r1) + String(r0);
+
+  if (c3 == 1) {
+    return sum(resultado, "0001");
+  } else {
+    return resultado; 
+  }
+}
+
+void invertComplementOne(String &bin) {
+  for (int i = 0; i < 4; i++) {
+    bin[i] = (bin[i] == '1') ? '0' : '1';
+  }
 }
 
 void handleCalculo(String entrada) {
@@ -53,39 +99,34 @@ void handleCalculo(String entrada) {
     char op = entrada.charAt(4);
     String binB = entrada.substring(5, 9);
 
-    int a = fromBinary4OnesComplement(binA);
-    int b = fromBinary4OnesComplement(binB);
-
-    int resultado;
+    String resultado;
 
     if (op == '+') {
-        resultado = a + b;
+      resultado = sum(binA, binB);
     }
     else {
-        resultado = a - b;
+      invertComplementOne(binB);
+      resultado = sum(binA, binB);
     }
 
     escreverLeds(resultado);
 
     Serial.println("------------");
     Serial.print("A: ");
-    Serial.println(a);
+    Serial.println(binA);
 
     Serial.print("B: ");
-    Serial.println(b);
+    if (op=='-') {
+      invertComplementOne(binB);
+    }
+
+    Serial.println(binB);
 
     Serial.print("Op: ");
     Serial.println(op);
 
-    Serial.print("Resultado decimal: ");
-    Serial.println(resultado);
-
     Serial.print("Resultado binario: ");
-    Serial.println(toBinary4(resultado));
-
-    if(resultado > 7 || resultado < -7) {
-        Serial.println("OVERFLOW!");
-    }
+    Serial.println(resultado);
 
     Serial.println("------------");
 }
