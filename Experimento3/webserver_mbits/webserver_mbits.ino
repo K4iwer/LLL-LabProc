@@ -3,7 +3,7 @@
 
 // Nome e senha do Wi-Fi
 const char* ssid = "ESP32_do_grupinho_s";
-const char* password = "LLL";
+const char* password = "12345678";
 
 // Cria servidor HTTP na porta 80
 WebServer server(80);
@@ -271,7 +271,7 @@ void handleCalculo() {
         <body>
         )rawliteral";
 
-    if((op != "!" && (resultado > 32767 || resultado < -32768)) || (resultado > 65.536)){
+    if((op != "!" && (resultado > 32767 || resultado < -32768)) || (resultado > 65536)){
         String resultadoBin = toBinary16(resultado);
         
         resposta += R"rawliteral(

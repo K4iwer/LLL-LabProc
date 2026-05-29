@@ -3,7 +3,7 @@
 
 // Nome e senha do Wi-Fi
 const char* ssid = "ESP32_do_grupinho_s";
-const char* password = "LLL";
+const char* password = "12345678";
 
 // Cria servidor HTTP na porta 80
 WebServer server(80);
