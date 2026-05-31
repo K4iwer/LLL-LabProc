@@ -3,7 +3,7 @@
 
 // Nome e senha do Wi-Fi
 const char* ssid = "ESP32_do_grupinho_s";
-const char* password = "LLL";
+const char* password = "12345678";
 
 // Cria servidor HTTP na porta 80
 WebServer server(80);
@@ -104,7 +104,7 @@ String paginaHTML = R"rawliteral(
 
             <div>
                 <label>Número B:</label><br>
-                <input type="text" name="b" maxlength="4" minlength="4" pattern="[01]{4}" placeholder="Ex: 1010" required>
+                <input type="text" name="b" maxlength="4"  pattern="(^$)|([01]{4})" placeholder="Opcional" >
             </div>
 
             <button type="submit" name="op" value="+">Add</button>
@@ -271,7 +271,7 @@ void handleCalculo() {
         resposta += R"rawliteral(
         <div class="container">
             <div class="alert">
-                <h1>Overflow!</h1>
+                <h1>Overflow ou Erro!!!</h1>
             </div>
         )rawliteral";
 
@@ -294,6 +294,12 @@ void handleCalculo() {
     String resultadoBin = toBinary4(resultado);
 
     resposta += "<div class=container><h1>Resultado</h1>";
+
+    // Ajuste para que retorno fatorial
+    if (op == "!") {
+        op = "";
+        binB = "";
+    } 
 
     resposta += "<p>";
     resposta += binA + " " + op + " " + binB;
