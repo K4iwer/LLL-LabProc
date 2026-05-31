@@ -145,7 +145,7 @@ int fromBinary4Signed(String bin) {
 
 int CalculateFactorial(int n) {
     if(n < 0) {
-        return -1;
+        return -999;
     }
 
     int result = 1;
@@ -294,6 +294,11 @@ void handleCalculo() {
     String resultadoBin = toBinary4(resultado);
 
     resposta += "<div class=container><h1>Resultado</h1>";
+
+    // Caso B n seja enviado, printar como zero
+    if (binB == "") {
+        binB = "0000";
+    }
 
     // Ajuste para que retorno fatorial
     if (op == "!") {
