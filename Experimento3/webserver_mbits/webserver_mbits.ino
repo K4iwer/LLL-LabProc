@@ -271,7 +271,7 @@ void handleCalculo() {
         <body>
         )rawliteral";
 
-    if((op != "!" && (resultado > 32767 || resultado < -32768)) || (resultado > 65.536)){
+    if((op != "!" && (resultado > 32767 || resultado < -32768)) || (resultado > 65536)){
         String resultadoBin = toBinary16(resultado);
         
         resposta += R"rawliteral(
