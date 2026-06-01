@@ -176,6 +176,8 @@ void handleCalculo() {
 
     int resultado;
 
+    unsigned long inicioOperacao = micros();
+
     if(op == "+") {
         resultado = a + b;
     } 
@@ -190,6 +192,8 @@ void handleCalculo() {
     }
 
     escreverLeds(resultado);
+
+    unsigned long tempoOperacao = micros() - inicioOperacao;
     
     String resposta = R"rawliteral(
         <!DOCTYPE html>
@@ -285,6 +289,10 @@ void handleCalculo() {
         resposta += resultadoBin;
         resposta += "</h2>";
 
+        resposta += "<h2>Tempo de operacao: ";
+        resposta += String(tempoOperacao);
+        resposta += " us</h2>";
+
         resposta += R"rawliteral(
         <br><a href='/'>Fazer outra operacao</a>
         </div>
@@ -318,6 +326,10 @@ void handleCalculo() {
     resposta += "<h2>Decimal: ";
     resposta += String(resultado);
     resposta += "</h2>";
+
+    resposta += "<h2>Tempo de operacao: ";
+    resposta += String(tempoOperacao);
+    resposta += " us</h2>";
 
     resposta += "<br><a href='/'>Voltar</a></div>";
     resposta += "</body></html>";
