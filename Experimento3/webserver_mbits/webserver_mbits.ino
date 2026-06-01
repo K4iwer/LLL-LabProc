@@ -111,6 +111,8 @@ String paginaHTML = R"rawliteral(
             <button type="submit" name="op" value="-">Sub</button>
             <div></div>
             <button type="submit" name="op" value="*">Mul</button>
+            <button type="submit" name="op" value="/">Div</button>
+            <div></div>
             <button type="submit" name="op" value="!">Fat</button>
 
         </form>
@@ -175,6 +177,7 @@ void handleCalculo() {
     int b = fromBinary16Signed(binB);
 
     int resultado;
+    bool divisaoPorZero = false;
 
     unsigned long inicioOperacao = micros();
 
@@ -186,6 +189,15 @@ void handleCalculo() {
     }
     else if (op == "*") {
         resultado = a * b;
+    }
+    else if (op == "/") {
+        if (b == 0) {
+            divisaoPorZero = true;
+            resultado = 0;
+        }
+        else {
+            resultado = a / b;
+        }
     }
     else {
         resultado = CalculateFactorial(a);
@@ -275,13 +287,22 @@ void handleCalculo() {
         <body>
         )rawliteral";
 
-    if((op != "!" && (resultado > 32767 || resultado < -32768)) || (resultado > 65536)){
+    if(divisaoPorZero || (op != "!" && (resultado > 32767 || resultado < -32768)) || (resultado > 65536)){
         String resultadoBin = toBinary16(resultado);
         
         resposta += R"rawliteral(
         <div class="container">
             <div class="alert">
-                <h1>Overflow ou Erro!!!</h1>
+        )rawliteral";
+
+        if (divisaoPorZero) {
+            resposta += "<h1>Divisao por zero!!!</h1>";
+        }
+        else {
+            resposta += "<h1>Overflow ou Erro!!!</h1>";
+        }
+
+        resposta += R"rawliteral(
             </div>
         )rawliteral";
 
