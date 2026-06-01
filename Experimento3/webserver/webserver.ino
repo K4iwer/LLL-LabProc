@@ -185,9 +185,9 @@ void handleCalculo() {
         resultado = CalculateFactorial(a);
     }
 
-    escreverLeds(resultado);
-
     unsigned long tempoOperacao = micros() - inicioOperacao;
+
+    escreverLeds(resultado);
     
     String resposta = R"rawliteral(
         <!DOCTYPE html>
