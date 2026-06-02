@@ -146,17 +146,11 @@ int fromBinary4Signed(String bin) {
 }
 
 int CalculateFactorial(int n) {
-    if(n < 0) {
-        return -999;
+    if(n <= 1) {
+        return 1;
     }
 
-    int result = 1;
-
-    for(;n > 1; n--) {
-        result *= n;
-    }
-
-    return result;
+    return n * CalculateFactorial(n-1);
 }
 
 // Função do cálculo
