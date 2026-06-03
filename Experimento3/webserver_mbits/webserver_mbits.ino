@@ -8,10 +8,10 @@ const char* password = "12345678";
 // Cria servidor HTTP na porta 80
 WebServer server(80);
 
-const int LED_BIT0 = 9;
-const int LED_BIT1 = 8;
-const int LED_BIT2 = 7;
-const int LED_BIT3 = 6;
+const int LED_BIT0 = 12;
+const int LED_BIT1 = 13;
+const int LED_BIT2 = 14;
+const int LED_BIT3 = 15;
 
 // Página HTML
 String paginaHTML = R"rawliteral(
