@@ -43,6 +43,7 @@ String paginaHTML() {
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PWM Servo ESP32-C3</title>
     <style>
         body {
