@@ -22,7 +22,7 @@ sequenceDiagram
     
     ESP32 (LEDC)->Servo Motor: Atualiza PWM
     
-    ESP32 (LEDC)->WebServer: Funcionou?
+    ESP32 (LEDC)->WebServer: Retorna valores escolhidos para validação
 
     WebServer-->>Usuario: Resposta HTML
 ```
