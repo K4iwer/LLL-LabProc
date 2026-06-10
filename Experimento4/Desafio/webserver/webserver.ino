@@ -57,6 +57,7 @@ String paginaHTML() {
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PWM Integrado ESP32-C3</title>
     <style>
         body {
@@ -127,7 +128,12 @@ String paginaHTML() {
             <label>Duty cycle (%)</label>
 )rawliteral";
 
-    html += "<input type='number' name='duty' min='0' max='100' step='1' value='" + String(ledDutyPercent) + "' required>";
+    html += "<input type='range' "
+        "name='duty' "
+        "min='0' "
+        "max='100' "
+        "value='" + String(ledDutyPercent) + "' "
+        "onchange='this.form.submit()'>";
 
     html += R"rawliteral(
             <div class="divider"></div>
@@ -135,7 +141,12 @@ String paginaHTML() {
             <label>Angulo (0 a 180)</label>
 )rawliteral";
 
-    html += "<input type='number' name='angle' min='0' max='180' step='1' value='" + String(servoAngle) + "' required>";
+    html += "<input type='range' "
+        "name='angle' "
+        "min='0' "
+        "max='180' "
+        "value='" + String(servoAngle) + "' "
+        "onchange='this.form.submit()'>";
 
     html += R"rawliteral(
             <br>

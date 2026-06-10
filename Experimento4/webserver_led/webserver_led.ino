@@ -8,7 +8,7 @@ const char* password = "12345678";
 WebServer server(80);
 
 const uint8_t LED_PWM_PIN = 6;
-const uint8_t LED_PWM_RESOLUTION = 10;
+const uint8_t LED_PWM_RESOLUTION = 14;
 
 uint32_t ledFrequency = 1000;
 uint8_t ledDutyPercent = 50;
@@ -40,6 +40,7 @@ String paginaHTML() {
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PWM LED ESP32-C3</title>
     <style>
         body {
@@ -62,15 +63,12 @@ String paginaHTML() {
         }
         h1 { margin-bottom: 24px; }
         label { display: block; margin-top: 18px; }
-        input, select {
-            font-size: 18px;
-            padding: 10px;
+
+        input[type=range] {
+            width: 280px;
             margin: 10px;
-            width: 170px;
-            text-align: center;
-            border: none;
-            border-radius: 10px;
         }
+
         button {
             font-size: 20px;
             padding: 10px 20px;
@@ -78,41 +76,46 @@ String paginaHTML() {
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: 0.2s;
         }
-        button:hover { transform: scale(1.05); }
-        .status { margin-top: 18px; line-height: 1.6; }
+
+        .status {
+            margin-top: 18px;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Controle PWM do LED</h1>
+
         <form action="/set" method="GET">
-            <label>Frequencia</label>
-            <select name="freq">
 )rawliteral";
 
-    const uint32_t frequencies[] = {100, 500, 1000, 5000};
-    for (uint8_t i = 0; i < 4; i++) {
-        html += "<option value='" + String(frequencies[i]) + "'";
-        if (frequencies[i] == ledFrequency) {
-            html += " selected";
-        }
-        html += ">" + String(frequencies[i]) + " Hz</option>";
-    }
+    // Slider da frequência
+    html += "<label>Frequencia (Hz)</label>";
+    html += "<input type='range' "
+            "name='freq' "
+            "min='10' "
+            "max='1000' "
+            "value='" + String(ledFrequency) + "'>";
 
-    html += R"rawliteral(
-            </select>
+    html += "<p>" + String(ledFrequency) + " Hz</p>";
 
-            <label>Duty cycle (%)</label>
-)rawliteral";
+    // Slider do duty cycle
+    html += "<label>Duty Cycle (%)</label>";
+    html += "<input type='range' "
+            "name='duty' "
+            "min='0' "
+            "max='100' "
+            "value='" + String(ledDutyPercent) + "'>";
 
-    html += "<input type='number' name='duty' min='0' max='100' step='1' value='" + String(ledDutyPercent) + "' required>";
+    html += "<p>" + String(ledDutyPercent) + "%</p>";
 
     html += R"rawliteral(
             <br>
             <button type="submit">Aplicar</button>
         </form>
+
         <div class="status">
 )rawliteral";
 
@@ -151,7 +154,7 @@ void handleSet() {
     uint32_t freq = server.arg("freq").toInt();
     uint8_t duty = server.arg("duty").toInt();
 
-    if (freq != 100 && freq != 500 && freq != 1000 && freq != 5000) {
+    if (freq < 10 || freq > 1000) {
         server.send(400, "text/plain", "Frequencia invalida");
         return;
     }
