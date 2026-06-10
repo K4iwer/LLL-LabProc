@@ -8,7 +8,7 @@ const char* password = "12345678";
 WebServer server(80);
 
 const uint8_t LED_PWM_PIN = 6;
-const uint8_t LED_PWM_RESOLUTION = 10;
+const uint8_t LED_PWM_RESOLUTION = 14;
 
 uint32_t ledFrequency = 1000;
 uint8_t ledDutyPercent = 50;
