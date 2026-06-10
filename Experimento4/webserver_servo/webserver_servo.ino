@@ -97,10 +97,10 @@ String paginaHTML() {
     html += "<input type='range' "
         "name='duty' "
         "min='0' "
-        "max='100' "
-        "value='50' "
+        "max='180' "
+        "value='90' "
         "onchange='this.form.submit()'>";
-        
+
     html += R"rawliteral(
             <br>
             <button type="submit">Aplicar</button>
