@@ -93,21 +93,16 @@ String paginaHTML() {
             <select name="freq">
 )rawliteral";
 
-    const uint32_t frequencies[] = {100, 500, 1000, 5000};
-    for (uint8_t i = 0; i < 4; i++) {
-        html += "<option value='" + String(frequencies[i]) + "'";
-        if (frequencies[i] == ledFrequency) {
-            html += " selected";
-        }
-        html += ">" + String(frequencies[i]) + " Hz</option>";
-    }
+    html += "<label>Frequencia (Hz)</label>";
 
-    html += R"rawliteral(
-            </select>
+    html += "<input type='range' "
+            "name='freq' "
+            "min='10' "
+            "max='1000' "
+            "value='" + String(ledFrequency) + "'>";
 
-            <label>Duty cycle (%)</label>
-)rawliteral";
-
+    html += "<p>" + String(ledFrequency) + " Hz</p>";
+    
     html += "<input type='range' "
         "name='duty' "
         "min='0' "
@@ -157,7 +152,7 @@ void handleSet() {
     uint32_t freq = server.arg("freq").toInt();
     uint8_t duty = server.arg("duty").toInt();
 
-    if (freq != 100 && freq != 500 && freq != 1000 && freq != 5000) {
+    if (freq < 10 || freq > 1000) {
         server.send(400, "text/plain", "Frequencia invalida");
         return;
     }
