@@ -107,7 +107,12 @@ String paginaHTML() {
             <label>Duty cycle (%)</label>
 )rawliteral";
 
-    html += "<input type='number' name='duty' min='0' max='100' step='1' value='" + String(ledDutyPercent) + "' required>";
+    html += "<input type='range' "
+        "name='duty' "
+        "min='0' "
+        "max='100' "
+        "value='50' "
+        "onchange='this.form.submit()'>";
 
     html += R"rawliteral(
             <br>

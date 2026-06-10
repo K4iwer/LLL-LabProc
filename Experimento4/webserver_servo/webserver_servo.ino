@@ -94,8 +94,13 @@ String paginaHTML() {
             <label>Angulo (0 a 180)</label>
 )rawliteral";
 
-    html += "<input type='number' name='angle' min='0' max='180' step='1' value='" + String(servoAngle) + "' required>";
-
+    html += "<input type='range' "
+        "name='duty' "
+        "min='0' "
+        "max='100' "
+        "value='50' "
+        "onchange='this.form.submit()'>";
+        
     html += R"rawliteral(
             <br>
             <button type="submit">Aplicar</button>
