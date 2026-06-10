@@ -63,15 +63,12 @@ String paginaHTML() {
         }
         h1 { margin-bottom: 24px; }
         label { display: block; margin-top: 18px; }
-        input, select {
-            font-size: 18px;
-            padding: 10px;
+
+        input[type=range] {
+            width: 280px;
             margin: 10px;
-            width: 170px;
-            text-align: center;
-            border: none;
-            border-radius: 10px;
         }
+
         button {
             font-size: 20px;
             padding: 10px 20px;
@@ -79,22 +76,23 @@ String paginaHTML() {
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: 0.2s;
         }
-        button:hover { transform: scale(1.05); }
-        .status { margin-top: 18px; line-height: 1.6; }
+
+        .status {
+            margin-top: 18px;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Controle PWM do LED</h1>
+
         <form action="/set" method="GET">
-            <label>Frequencia</label>
-            <select name="freq">
 )rawliteral";
 
+    // Slider da frequência
     html += "<label>Frequencia (Hz)</label>";
-
     html += "<input type='range' "
             "name='freq' "
             "min='10' "
@@ -102,18 +100,22 @@ String paginaHTML() {
             "value='" + String(ledFrequency) + "'>";
 
     html += "<p>" + String(ledFrequency) + " Hz</p>";
-    
+
+    // Slider do duty cycle
+    html += "<label>Duty Cycle (%)</label>";
     html += "<input type='range' "
-        "name='duty' "
-        "min='0' "
-        "max='100' "
-        "value='" + String(ledDutyPercent) + "' "
-        "onchange='this.form.submit()'>";
+            "name='duty' "
+            "min='0' "
+            "max='100' "
+            "value='" + String(ledDutyPercent) + "'>";
+
+    html += "<p>" + String(ledDutyPercent) + "%</p>";
 
     html += R"rawliteral(
             <br>
             <button type="submit">Aplicar</button>
         </form>
+
         <div class="status">
 )rawliteral";
 
