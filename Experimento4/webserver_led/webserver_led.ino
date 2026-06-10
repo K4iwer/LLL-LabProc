@@ -111,7 +111,7 @@ String paginaHTML() {
         "name='duty' "
         "min='0' "
         "max='100' "
-        "value='50' "
+        "value='" + String(ledDutyPercent) + "' "
         "onchange='this.form.submit()'>";
 
     html += R"rawliteral(

@@ -98,7 +98,7 @@ String paginaHTML() {
         "name='duty' "
         "min='0' "
         "max='180' "
-        "value='90' "
+        "value='" + String(servoAngle) + "' "
         "onchange='this.form.submit()'>";
 
     html += R"rawliteral(
