@@ -95,7 +95,7 @@ String paginaHTML() {
 )rawliteral";
 
     html += "<input type='range' "
-        "name='duty' "
+        "name='angle' "
         "min='0' "
         "max='180' "
         "value='" + String(servoAngle) + "' "
