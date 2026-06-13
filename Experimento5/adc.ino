@@ -3,15 +3,26 @@
 
 // Nome e senha do Wi-Fi
 const char* ssid = "ESP32_do_grupinho_s";
-const char* password = "LLL";
+const char* password = "12345678";
 
 // Cria servidor HTTP na porta 80
 WebServer server(80);
 
 // Define o pino do LDR (O GPIO 34 é excelente para ADC)
 const int LDR_PIN = 34;
+const int BOTAO_PIN = 4;
 
 int valorLDRAtual = 0;
+unsigned long tempoUltimaPiscada = 0;
+const long INTERVALO_PISCADA = 2000;
+bool aceso = false;
+
+volatile bool alertaVermelho = false; 
+volatile unsigned long tempoInicioAlerta = 0;
+
+volatile bool verificandoBotao = false;
+volatile unsigned long tempoInicioVerificacao = 0;
+const unsigned long DEBOUNCE_DELAY = 50;
 
 // Página HTML
 String paginaHTML = R"rawliteral(
@@ -86,14 +97,21 @@ void handleSensor() {
     server.send(200, "text/plain", String(valorLDRAtual)); // Retorna como texto simples
 }
 
+void IRAM_ATTR isrBotao() {
+    if (!alertaVermelho && !verificandoBotao) {
+        verificandoBotao = true;
+        tempoInicioVerificacao = millis();
+    }
+}
+
 void setup() {
     Serial.begin(115200);
 
     // Configura os pinos
-    pinMode(LED_BIT0, OUTPUT);
-    pinMode(LED_BIT1, OUTPUT);
-    pinMode(LED_BIT2, OUTPUT);
-    pinMode(LED_BIT3, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(BOTAO_PIN, INPUT_PULLUP);
+
+    attachInterrupt(digitalPinToInterrupt(BOTAO_PIN), isrBotao, FALLING);
 
     // Access Point
     WiFi.softAP(ssid, password);
@@ -115,6 +133,56 @@ void loop() {
     // Mantém o servidor escutando as requisições
     server.handleClient();
 
-    // Não tenho certeza se isso conta como pooling
-    valorLDRAtual = analogRead(LDR_PIN);
+    unsigned long tempoAtual = millis();
+
+    // --- VALIDADOR DO DEBOUNCE ---
+    if (verificandoBotao) {
+        if (tempoAtual - tempoInicioVerificacao >= DEBOUNCE_DELAY) {
+            
+            if (digitalRead(BOTAO_PIN) == LOW) {
+                alertaVermelho = true;
+                tempoInicioAlerta = tempoAtual; 
+            }
+            
+            verificandoBotao = false; 
+        }
+    }
+
+    // --- Máquina de Estados do LED ---
+    if (alertaVermelho) {
+        if (tempoAtual - tempoInicioAlerta <= 3000) {
+            rgbLedWrite(LED_BUILTIN, 15, 0, 0); 
+        } else {
+            alertaVermelho = false;
+            rgbLedWrite(LED_BUILTIN, 0, 0, 0);
+            aceso = false;
+
+            // Volta como estava
+            tempoUltimaPiscada += 3000;
+            if (aceso) {
+                rgbLedWrite(LED_BUILTIN, 5, 5, 0); // Amarelo
+            } else {
+                rgbLedWrite(LED_BUILTIN, 0, 0, 0); // Apagado
+            }
+        }
+    } 
+    else {
+        valorLDRAtual = analogRead(LDR_PIN);
+
+        if (valorLDRAtual <= 2046) {
+            if (tempoAtual - tempoUltimaPiscada >= INTERVALO_PISCADA) {
+                tempoUltimaPiscada = tempoAtual;
+                aceso = !aceso;
+
+                if (aceso) {
+                    rgbLedWrite(LED_BUILTIN, 5, 5, 0); // Amarelo
+                } else {
+                    rgbLedWrite(LED_BUILTIN, 0, 0, 0); // Apagado
+                }
+            }
+        } else {
+            rgbLedWrite(LED_BUILTIN, 0, 0, 0);
+            aceso = false;
+        }
+    }
 }
