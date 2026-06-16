@@ -14,7 +14,7 @@ const int BOTAO_PIN = 4;
 
 int valorLDRAtual = 0;
 unsigned long tempoUltimaPiscada = 0;
-const long INTERVALO_PISCADA = 2000;
+const long INTERVALO_PISCADA = 500;
 bool aceso = false;
 
 volatile bool alertaVermelho = false; 
