@@ -18,7 +18,7 @@ Usuario ->>WebServer: GET /sensor
     Sensor de luminosidade-->>ESP32: Retorna valor de luminosidade
     ESP32-->>WebServer: Retorna valor lido
 
-WebServer-->Usuario:Valor atual de luminosidade
+WebServer-->>Usuario:Valor atual de luminosidade
 
 Usuario->>Botao:Pressiona
 Botao->>ESP32:SOS
