@@ -74,7 +74,7 @@ String paginaHTML = R"rawliteral(
             fetch('/sensor')
                 .then(response => response.text())
                 .then(valor => {
-                    document.getElementById('valorLDR').innerText = valor;
+                    document.getElementById('valorLDR').innerText = 4095-valor;
                 })
                 .catch(error => console.error('Erro ao ler sensor:', error));
         }
