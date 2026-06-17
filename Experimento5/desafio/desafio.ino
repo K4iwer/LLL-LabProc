@@ -1,4 +1,4 @@
-const int LDR_PIN = 34;
+const int LDR_PIN = 0;
 const int BOTAO_PIN = 4;
 
 const int LIMIAR = 2000;
@@ -47,7 +47,7 @@ void loop()
 
     int luminosidade = analogRead(LDR_PIN);
 
-    bool noite = luminosidade < LIMIAR;
+    bool noite = luminosidade > LIMIAR;
 
     if (noite)
     {
