@@ -9,7 +9,7 @@ const char* password = "12345678";
 WebServer server(80);
 
 // Define o pino do LDR (O GPIO 34 é excelente para ADC)
-const int LDR_PIN = 34;
+const int LDR_PIN = 0;
 const int BOTAO_PIN = 4;
 
 int valorLDRAtual = 0;
@@ -169,7 +169,7 @@ void loop() {
     else {
         valorLDRAtual = analogRead(LDR_PIN);
 
-        if (valorLDRAtual <= 2046) {
+        if (valorLDRAtual >= 2046) {
             if (tempoAtual - tempoUltimaPiscada >= INTERVALO_PISCADA) {
                 tempoUltimaPiscada = tempoAtual;
                 aceso = !aceso;
