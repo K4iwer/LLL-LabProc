@@ -9,12 +9,12 @@ const char* password = "12345678";
 WebServer server(80);
 
 // Define o pino do LDR (O GPIO 34 é excelente para ADC)
-const int LDR_PIN = 34;
+const int LDR_PIN = 0;
 const int BOTAO_PIN = 4;
 
 int valorLDRAtual = 0;
 unsigned long tempoUltimaPiscada = 0;
-const long INTERVALO_PISCADA = 2000;
+const long INTERVALO_PISCADA = 500;
 bool aceso = false;
 
 volatile bool alertaVermelho = false; 
@@ -74,7 +74,7 @@ String paginaHTML = R"rawliteral(
             fetch('/sensor')
                 .then(response => response.text())
                 .then(valor => {
-                    document.getElementById('valorLDR').innerText = valor;
+                    document.getElementById('valorLDR').innerText = 4095-valor;
                 })
                 .catch(error => console.error('Erro ao ler sensor:', error));
         }
@@ -169,7 +169,7 @@ void loop() {
     else {
         valorLDRAtual = analogRead(LDR_PIN);
 
-        if (valorLDRAtual <= 2046) {
+        if (valorLDRAtual >= 2046) {
             if (tempoAtual - tempoUltimaPiscada >= INTERVALO_PISCADA) {
                 tempoUltimaPiscada = tempoAtual;
                 aceso = !aceso;
