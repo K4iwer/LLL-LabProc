@@ -83,3 +83,23 @@ Comandos do teclado:
 
 Os pinos e o endereço I2C estão declarados no início do sketch e devem ser
 ajustados caso a montagem física use outra ligação.
+
+
+## 5. Diagrama de Sequência
+
+```mermaid
+sequenceDiagram
+    actor Usuario
+
+    participant Teclado
+    participant RaspBerry 
+    participant Monitor
+
+    Usuario->>Teclado: Escolhe valores 4 bits
+    Teclado->>RaspBerry: Sinal das teclas escolhidas
+    RaspBerry->>RaspBerry: Processa calculo
+
+    RaspBerry->>Monitor: Printa resultado
+
+    Monitor->>Usuario: Apresenta resultado
+```
