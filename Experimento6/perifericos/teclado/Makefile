@@ -1,5 +1,5 @@
 build:
-	g++ matrixkeypad.cpp keypad.cpp key.cpp -o matrixkeypad -lwiringPi
+	g++ MatrixKeypad.cpp Keypad.cpp Key.cpp -o MatrixKeypad -lwiringPi
 
 run: build
-	./matrixkeypad
+	./MatrixKeypad
