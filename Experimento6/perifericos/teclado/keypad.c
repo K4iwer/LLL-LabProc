@@ -1,27 +1,22 @@
 #include "keypad.h"
 
-#include <gpiod.h>
-#include <unistd.h>
-
-#define CHIPNAME "/dev/gpiochip0"
+#include <wiringPi.h>
 
 #define NUM_ROWS 4
 #define NUM_COLS 4
 
-/* GPIOs de exemplo.
-   Altere para os pinos que você ligar. */
-
-static const unsigned int rows[NUM_ROWS] =
+/* Numeração WiringPi */
+static const int rows[NUM_ROWS] =
 {
-    17,27,22,23
+    0, 2, 3, 4
 };
 
-static const unsigned int cols[NUM_COLS] =
+static const int cols[NUM_COLS] =
 {
-    24,25,5,6
+    5, 6, 21, 22
 };
 
-static const char keypad[4][4] =
+static const char keys[4][4] =
 {
     {'1','2','3','A'},
     {'4','5','6','B'},
@@ -29,32 +24,21 @@ static const char keypad[4][4] =
     {'*','0','#','D'}
 };
 
-static struct gpiod_chip *chip;
-
-static struct gpiod_line *rowLines[NUM_ROWS];
-static struct gpiod_line *colLines[NUM_COLS];
-
 bool keypad_init(void)
 {
-    chip = gpiod_chip_open(CHIPNAME);
-
-    if(chip == NULL)
+    if (wiringPiSetup() == -1)
         return false;
 
-    for(int i=0;i<NUM_ROWS;i++)
+    for (int i = 0; i < NUM_ROWS; i++)
     {
-        rowLines[i] = gpiod_chip_get_line(chip, rows[i]);
-
-        if(gpiod_line_request_output(rowLines[i],"keypad",0) < 0)
-            return false;
+        pinMode(rows[i], OUTPUT);
+        digitalWrite(rows[i], LOW);
     }
 
-    for(int i=0;i<NUM_COLS;i++)
+    for (int i = 0; i < NUM_COLS; i++)
     {
-        colLines[i] = gpiod_chip_get_line(chip, cols[i]);
-
-        if(gpiod_line_request_input(colLines[i],"keypad") < 0)
-            return false;
+        pinMode(cols[i], INPUT);
+        pullUpDnControl(cols[i], PUD_DOWN);
     }
 
     return true;
@@ -62,30 +46,26 @@ bool keypad_init(void)
 
 char keypad_getKey(void)
 {
-    while(1)
+    while (1)
     {
-        for(int r=0;r<NUM_ROWS;r++)
+        for (int r = 0; r < NUM_ROWS; r++)
         {
-            /* Desliga todas as linhas */
+            for (int i = 0; i < NUM_ROWS; i++)
+                digitalWrite(rows[i], LOW);
 
-            for(int i=0;i<NUM_ROWS;i++)
-                gpiod_line_set_value(rowLines[i],0);
+            digitalWrite(rows[r], HIGH);
 
-            /* Liga somente uma */
+            delay(1);
 
-            gpiod_line_set_value(rowLines[r],1);
-
-            usleep(1000);
-
-            for(int c=0;c<NUM_COLS;c++)
+            for (int c = 0; c < NUM_COLS; c++)
             {
-                if(gpiod_line_get_value(colLines[c]))
+                if (digitalRead(cols[c]))
                 {
-                    while(gpiod_line_get_value(colLines[c]));
+                    while (digitalRead(cols[c]));
 
-                    usleep(20000);
+                    delay(20);
 
-                    return keypad[r][c];
+                    return keys[r][c];
                 }
             }
         }
@@ -94,11 +74,4 @@ char keypad_getKey(void)
 
 void keypad_close(void)
 {
-    for(int i=0;i<NUM_ROWS;i++)
-        gpiod_line_release(rowLines[i]);
-
-    for(int i=0;i<NUM_COLS;i++)
-        gpiod_line_release(colLines[i]);
-
-    gpiod_chip_close(chip);
 }

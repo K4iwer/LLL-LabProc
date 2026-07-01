@@ -1,8 +1,8 @@
 CC = gcc
 
-CFLAGS = -Wall -Wextra -std=c11 -g
+CFLAGS = -Wall -Wextra -std=c11
 
-LDFLAGS = -lgpiod
+LDFLAGS = -lwiringPi
 
 TARGET = teclado
 
@@ -18,10 +18,10 @@ $(TARGET): $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
-clean:
-	rm -f $(OBJS) $(TARGET)
-
 run: $(TARGET)
 	sudo ./$(TARGET)
+
+clean:
+	rm -f $(OBJS) $(TARGET)
 
 .PHONY: all clean run
