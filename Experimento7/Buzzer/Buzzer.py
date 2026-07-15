@@ -3,7 +3,7 @@ import time
 import threading
 
 # Definição do pino
-BUZZER_PIN = 22
+BUZZER_PIN = 12
 
 SOM_ATIVADO = True 
 
