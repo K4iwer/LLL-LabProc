@@ -1,4 +1,4 @@
-# Experimento 9 — Fechadura Eletrônica (Raspberry Pi 3)
+# Experimento 8 — Fechadura Eletrônica (Raspberry Pi 3)
 
 Protótipo de uma **fechadura eletrônica** controlada por um Raspberry Pi 3.
 O sistema recebe uma senha por **teclado matricial 4x4**, dá **feedback sonoro**
@@ -12,7 +12,7 @@ Esta pasta contém as implementações **isoladas** de cada componente e a
 ## Estrutura
 
 ```
-Experimento9/
+Experimento8/
 ├── Buzzer/               # feedback sonoro (isolado)
 │   └── Buzzer.py
 ├── Teclado/              # teclado matricial 4x4 (isolado)
@@ -67,7 +67,7 @@ i2cdetect -y 1
 Cada componente pode ser validado separadamente antes da integração:
 
 ```sh
-cd Experimento9
+cd Experimento8
 
 # Buzzer: alterna bips de tecla, sucesso e erro
 python3 Buzzer/Buzzer.py
@@ -88,7 +88,7 @@ python3 Tranca_Servo/Tranca_Servo.py
 ## 4. Integração — executar a fechadura completa
 
 ```sh
-cd Experimento9/Fechadura
+cd Experimento8/Fechadura
 python3 fechadura.py
 ```
 
