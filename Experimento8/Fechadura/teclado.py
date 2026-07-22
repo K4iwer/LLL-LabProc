@@ -8,7 +8,7 @@ import time
 # ---------------------------------------------------------------------------
 
 LINHAS = [5, 6, 13, 19]     # saidas
-COLUNAS = [26, 16, 20, 21]  # entradas (pull-up)
+COLUNAS = [26, 21, 20, 16]  # entradas (pull-up)
 
 TECLAS = [
     ["1", "2", "3", "A"],

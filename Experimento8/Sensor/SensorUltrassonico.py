@@ -16,8 +16,8 @@ import time
 # ---------------------------------------------------------------------------
 
 # --- MAPEAMENTO DOS PINOS (numeracao BCM) ---
-TRIG_PIN = 23
-ECHO_PIN = 24
+TRIG_PIN = 14
+ECHO_PIN = 15
 
 # Distancia (cm) abaixo da qual consideramos a porta FECHADA/TRANCADA
 LIMIAR_FECHADA_CM = 8.0

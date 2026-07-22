@@ -16,7 +16,7 @@ import time
 
 # --- MAPEAMENTO DOS PINOS (numeracao BCM) ---
 LINHAS = [5, 6, 13, 19]     # saidas
-COLUNAS = [26, 16, 20, 21]  # entradas (pull-up)
+COLUNAS = [26, 21, 20, 16]  # entradas (pull-up)
 
 # --- LAYOUT FISICO DO TECLADO ---
 TECLAS = [

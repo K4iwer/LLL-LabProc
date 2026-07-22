@@ -9,8 +9,8 @@ import time
 # ATENCAO: use divisor de tensao no pino ECHO (5 V -> 3,3 V).
 # ---------------------------------------------------------------------------
 
-TRIG_PIN = 23
-ECHO_PIN = 24
+TRIG_PIN = 14
+ECHO_PIN = 15
 
 LIMIAR_FECHADA_CM = 8.0
 TIMEOUT_S = 0.05
